@@ -3,6 +3,7 @@ var main = function() {
     var avoiding = false;
 	var was_shooting = false;
     var stream = 'http://10.0.0.5';
+    var command;
 
     var was_avoiding = false;
 	
