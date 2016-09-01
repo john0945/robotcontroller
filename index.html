@@ -28,13 +28,17 @@
 		<div class="jumbotron text-center">
 		<h1>Robot Controller</h1>
 		</div>
-
+        <div id="camera" class = "col-xs-12 col-md-12 text-center panel">
+            <img id="live" src="http://10.0.0.5/live">
+        </div>
         <div id="drive" class = "col-xs-12 col-md-12  text-center panel">
             <button class="button button-action button-glow button-pill button-jumbo">Forward</button>
         </div>
 		<div id="left" class = "col-xs-12 col-md-6 text-center panel">
 		<button class="button button-action button-glow button-pill button-jumbo">Turn left</button>
 		</div>
+
+
 		<div id="right" class = "col-xs-12 col-md-6  text-center  panel">
 		<button class="button button-action button-glow button-pill button-jumbo">Turn right</button>
 		</div>
@@ -63,7 +67,7 @@
 
 
  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
 	<script src="direction.js"></script>

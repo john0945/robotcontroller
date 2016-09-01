@@ -2,6 +2,7 @@ var main = function() {
 	var shooting = false;
     var avoiding = false;
 	var was_shooting = false;
+    var stream = 'http://10.0.0.5';
 
     var was_avoiding = false;
 	
@@ -16,13 +17,18 @@ var main = function() {
 			//if we're driving, and any button is pressed, stop driving
 			avoiding = false;
 			was_avoiding = true;
-			// stop_driving();
-		}
+
+            command.action = "avoid";
+            command.amount = "0";
+            send(JSON.stringify(command));
+        }
         if (shooting){
             //if we're driving, and any button is pressed, stop driving
             shooting = false;
             was_shooting = true;
-            // stop_driving();
+            command.action = "wave";
+            command.amount = "0";
+            send(JSON.stringify(command));
         }
 		var command = {}; // create an empty object
 
@@ -35,23 +41,33 @@ var main = function() {
 
 			break;
 			case 'drive':
-				//if drive was pressed, and we weren't just driving, then start driving
-				// if(was_driving === false){
-				// 	start_driving();
-				// 	driving = true;
-				// 	$(this).removeClass('button-caution');
-				// }
-				//
+                $.getJSON(stream+"/parameters?camera=0", function() {
+                });
+
+				command.action = "forward";
+				command.amount = "1";
+				send(JSON.stringify(command));
 			break;
 			case 'right':
-				// command.action = "right";
-				// command.amount = "1";
-				// send(JSON.stringify(command));
+				command.action = "right";
+				command.amount = "1";
+				send(JSON.stringify(command));
 			break;
+            case 'back':
+                $.getJSON(stream+"/parameters?camera=1", function() {
+                });
+                command.action = "back";
+                command.amount = "1";
+                send(JSON.stringify(command));
 			case 'shoot':
                 if(was_shooting === false){
                     	// start_driving();
-                    	shooting = true;
+						shooting = true;
+						command.action = "wave";
+						command.amount = "1";
+						send(JSON.stringify(command));
+
+
                     	$(this).removeClass('button-action');
                     }
 
@@ -60,6 +76,9 @@ var main = function() {
                 if(was_avoiding === false){
                     // start_driving();
                     avoiding = true;
+					command.action = "avoid";
+					command.amount = "1";
+					send(JSON.stringify(command));
                     $(this).removeClass('button-action');
                 }
                 break;
@@ -95,18 +114,25 @@ var start_driving= function(){
 }
 
 
-// function send(command) {
-// 	var xhr = new XMLHttpRequest();
-// 	xhr.open("POST", "https://httpbin.org/post", true);
-// 	xhr.setRequestHeader("Content-Type", "application/json");
-// 	xhr.onreadystatechange = function(){
-// 		if (xhr.readyState === 4 && xhr.status === 200) {
-// 			console.log(xhr.responseText);
-// 		}
-// 	};
-// 	xhr.send(hero);
-// }
-//
+function send(command) {
+	// var data = "\r\n{\r\n    \"action\": \"left\",\r\n    \"amount\": \"1\"\r\n}";
+
+	var xhr = new XMLHttpRequest();
+	// xhr.withCredentials = true;
+
+	xhr.addEventListener("readystatechange", function () {
+		if (this.readyState === 4) {
+			console.log(this.responseText);
+		}
+	});
+
+	xhr.open("POST", "http://137.158.126.10:4000/m2m/applications/Prime_controller/containers/1/contentInstances");
+	// xhr.setRequestHeader("cache-control", "no-cache");
+	// xhr.setRequestHeader("postman-token", "d38eeefe-3f76-f4bc-46d5-342ada497629");
+
+	xhr.send(command);
+}
+
 
 
 // function request(sensor) {
@@ -218,4 +244,11 @@ function deregister(){
 //
 //     xhr.send(data);
 // }
+
+
+
+
+
+
+
 $(document).ready(main);
