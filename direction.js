@@ -7,7 +7,7 @@ var main = function() {
 	
 	$('.button').click(function(event){
 		//set all buttons to normal colour
-		$('.button').addClass('button-caution');
+		$('.button').addClass('button-action');
 		var current_id = this.offsetParent.id;
 		was_shooting = false;
         was_avoiding = false;
@@ -52,7 +52,7 @@ var main = function() {
                 if(was_shooting === false){
                     	// start_driving();
                     	shooting = true;
-                    	$(this).removeClass('button-caution');
+                    	$(this).removeClass('button-action');
                     }
 
                     break;
@@ -60,7 +60,7 @@ var main = function() {
                 if(was_avoiding === false){
                     // start_driving();
                     avoiding = true;
-                    $(this).removeClass('button-caution');
+                    $(this).removeClass('button-action');
                 }
                 break;
             case 'register':
@@ -149,7 +149,7 @@ function deregister(){
         "url": "http://137.158.126.10:4000/m2m/applications/Prime_controller",
         "method": "DELETE",
         "headers": {
-           
+
         }
     }
 
