@@ -1,18 +1,29 @@
 var main = function() {
-	var driving = false;
-	var was_driving = false;
+	var shooting = false;
+    var avoiding = false;
+	var was_shooting = false;
+
+    var was_avoiding = false;
 	
 	$('.button').click(function(event){
 		//set all buttons to normal colour
 		$('.button').addClass('button-caution');
 		var current_id = this.offsetParent.id;
-		was_driving = false;
-		if (driving){
+		was_shooting = false;
+        was_avoiding = false;
+
+        if (avoiding){
 			//if we're driving, and any button is pressed, stop driving
-			driving = false;
-			was_driving = true;
-			stop_driving();
+			avoiding = false;
+			was_avoiding = true;
+			// stop_driving();
 		}
+        if (shooting){
+            //if we're driving, and any button is pressed, stop driving
+            shooting = false;
+            was_shooting = true;
+            // stop_driving();
+        }
 		var command = {}; // create an empty object
 
 		switch(current_id){
@@ -25,23 +36,39 @@ var main = function() {
 			break;
 			case 'drive':
 				//if drive was pressed, and we weren't just driving, then start driving
-				if(was_driving === false){
-					start_driving();
-					driving = true;
-					$(this).removeClass('button-caution');			
-				}
-				
+				// if(was_driving === false){
+				// 	start_driving();
+				// 	driving = true;
+				// 	$(this).removeClass('button-caution');
+				// }
+				//
 			break;
 			case 'right':
-				command.action = "right";
-				command.amount = "1";
-				send(JSON.stringify(command));
+				// command.action = "right";
+				// command.amount = "1";
+				// send(JSON.stringify(command));
 			break;
 			case 'shoot':
-			break;
+                if(was_shooting === false){
+                    	// start_driving();
+                    	shooting = true;
+                    	$(this).removeClass('button-caution');
+                    }
+
+                    break;
 			case 'avoid':
-			alert("avoid");
-			break;
+                if(was_avoiding === false){
+                    // start_driving();
+                    avoiding = true;
+                    $(this).removeClass('button-caution');
+                }
+                break;
+            case 'register':
+                register();
+                break;
+            case 'deregister':
+                deregister();
+			    break;
 			default:			
 			
 		}			
@@ -58,79 +85,137 @@ var stop_driving  = function(){
 	send(JSON.stringify(command));
 }
 var start_driving= function(){
-	var command = {}; // create an empty object
-	command.action = "forward"; // create a name property based on the input field's value
-	command.amount = "0";
-	send(JSON.stringify(command));
+    System.Diagnostics.Process.Start("python.exe", "start_driving.py");
+    alert("started driving");
+
+    // var command = {}; // create an empty object
+	// command.action = "forward"; // create a name property based on the input field's value
+	// command.amount = "0";
+	// send(JSON.stringify(command));
 }
 
 
-function send(command) {
-	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "https://httpbin.org/post", true);
-	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.onreadystatechange = function(){
-		if (xhr.readyState === 4 && xhr.status === 200) {
-			console.log(xhr.responseText);
-		}
-	};
-	xhr.send(hero);
-}
+// function send(command) {
+// 	var xhr = new XMLHttpRequest();
+// 	xhr.open("POST", "https://httpbin.org/post", true);
+// 	xhr.setRequestHeader("Content-Type", "application/json");
+// 	xhr.onreadystatechange = function(){
+// 		if (xhr.readyState === 4 && xhr.status === 200) {
+// 			console.log(xhr.responseText);
+// 		}
+// 	};
+// 	xhr.send(hero);
+// }
+//
 
 
-
-function request(sensor) {
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function() {
-		if (xhr.readyState === 4 && xhr.status === 200) {
-			document.getElementById("output").innerHTML = xhr.responseText;
-		}
-	}
-	xhr.open("GET", url, true);
-	xhr.send();
-	document.getElementById("output").innerHTML = "Waiting for response ...";
-}
+// function request(sensor) {
+// 	var xhr = new XMLHttpRequest();
+// 	xhr.onreadystatechange = function() {
+// 		if (xhr.readyState === 4 && xhr.status === 200) {
+// 			document.getElementById("output").innerHTML = xhr.responseText;
+// 		}
+// 	}
+// 	xhr.open("GET", url, true);
+// 	xhr.send();
+// 	document.getElementById("output").innerHTML = "Waiting for response ...";
+// }
 
 
 function register(){
-	var appId = 'Prime';
+	var appId = 'Prime_controller';
 	var url = 'http://137.158.126.10:4000/m2m/applications';
 	var data = {'application': {'appId': appId}};
-
+    data = JSON.stringify(data)
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
     console.log(data);
-	xhr.onreadystatechange = function(){
+    // xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function(){
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			console.log(xhr.responseText);
 		}
 	};
-	xhr.send(data);
+
+    xhr.send(data);
     //container();
 }
 
-function container()
-{
-
-    var appId = 'Prime';
-    var url = 'http://137.158.126.10:4000/m2m/applications/Prime/containers';
-    var data = {'container': {'id': 'Prime'}}
-
-
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    //xhr.setRequestHeader("Content-Type", "application/json");
-    console.log(data);
-    xhr.onreadystatechange = function(){
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log(xhr.responseText);
+function deregister(){
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "http://137.158.126.10:4000/m2m/applications/Prime_controller",
+        "method": "DELETE",
+        "headers": {
+           
         }
-    };
-    xhr.send(data);
+    }
 
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+    });
 }
 
+// function container()
+// {
+//
+//     var appId = 'Prime';
+//     var url = 'http://137.158.126.10:4000/m2m/applications/Prime/containers';
+//     var data = {'container': {'id': 'Prime'}}
+//
+//
+//     var xhr = new XMLHttpRequest();
+//     xhr.open("POST", url, true);
+//     //xhr.setRequestHeader("Content-Type", "application/json");
+//     console.log(data);
+//     xhr.onreadystatechange = function(){
+//         if (xhr.readyState === 4 && xhr.status === 200) {
+//             console.log(xhr.responseText);
+//         }
+//     };
+//     xhr.send(data);
+//
+// }
+//
+//
 
-$(document).ready(register);
+// function register(){
+//     // var settings = {
+//     //     "async": true,
+//     //     "crossDomain": true,
+//     //     "url": "http://137.158.126.10:4000/m2m/applications/myApp/containers/temperature/contentInstances/latest",
+//     //     "method": "GET",
+//     //     "headers": {
+//     //         // "content-type": "application/json"
+//     //         // "cache-control": "no-cache",
+//     //         // "postman-token": "a4ade1bc-9a60-e745-2e24-849bbae6e53b"
+//     //      },
+//     //     "processData": false,
+//     //     "data": "{\r\n    \"degrees\": 20\r\n}"
+//     // }
+//     //
+//     // $.ajax(settings).done(function (response) {
+//     //     console.log(response);
+//     // });
+//
+//
+//     var data = "{\r\n  \"application\": {\r\n    \"appId\": \"myApp13\"\r\n  }\r\n}\r\n";
+//
+//     var xhr = new XMLHttpRequest();
+//     // xhr.withCredentials = true;
+//
+//     xhr.addEventListener("readystatechange", function () {
+//         if (this.readyState === 4) {
+//             console.log(this.responseText);
+//         }
+//     });
+//
+//     xhr.open("POST", "http://137.158.126.10:4000/m2m/applications");
+//     // xhr.setRequestHeader("cache-control", "no-cache");
+//     // xhr.setRequestHeader("postman-token", "b88e15be-4d00-a74c-8bbc-48111d284306");
+//
+//     xhr.send(data);
+// }
 $(document).ready(main);

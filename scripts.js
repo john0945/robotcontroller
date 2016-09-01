@@ -46,3 +46,6 @@ function send(hero) {
     xhr.send(hero);
 }
 
+
+
+
