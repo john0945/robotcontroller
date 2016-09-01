@@ -257,8 +257,8 @@
 
 .button-action,
 .button-action-flat {
-  background-color: #a5de37;
-  border-color: #a5de37;
+  background-color: #008080;
+  border-color: #008080;
   color: white; }
   .button-action:visited,
   .button-action-flat:visited {
@@ -266,16 +266,16 @@
   .button-action:hover, .button-action:focus,
   .button-action-flat:hover,
   .button-action-flat:focus {
-    background-color: #b9e563;
-    border-color: #b9e563;
+    background-color: #008080;
+    border-color: #008080;
     color: white; }
   .button-action:active, .button-action.active, .button-action.is-active,
   .button-action-flat:active,
   .button-action-flat.active,
   .button-action-flat.is-active {
-    background-color: #a1d243;
-    border-color: #a1d243;
-    color: #8bc220; }
+    background-color: #008080;
+    border-color: #008080;
+    color: #008080; }
 
 .button-highlight,
 .button-highlight-flat {
