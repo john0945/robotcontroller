@@ -1,8 +1,12 @@
+var m2m = 'http://10.0.0.7:4000/';
+// var m2m = 'http://192.168.137.43:4000/';
+var sensor_val;
 var main = function() {
 	var shooting = false;
     var avoiding = false;
 	var was_shooting = false;
     var stream = 'http://10.0.0.5';
+    // var m2m = 'http://10.0.0.7:4000/'
     var command;
 
     var was_avoiding = false;
@@ -18,6 +22,7 @@ var main = function() {
 			//if we're driving, and any button is pressed, stop driving
 			avoiding = false;
 			was_avoiding = true;
+            var command = {};
 
             command.action = "avoid";
             command.amount = "0";
@@ -27,6 +32,8 @@ var main = function() {
             //if we're driving, and any button is pressed, stop driving
             shooting = false;
             was_shooting = true;
+            var command = {};
+
             command.action = "wave";
             command.amount = "0";
             send(JSON.stringify(command));
@@ -36,35 +43,42 @@ var main = function() {
 		switch(current_id){
 			
 			case 'left':
-				command.action = "left";
-				command.amount = "1";
+                var command = {};
+                command.action = "left";
+				command.amount = "3";
 				send(JSON.stringify(command));
 
 			break;
 			case 'drive':
                 $.getJSON(stream+"/parameters?camera=0", function() {
                 });
-
-				command.action = "forward";
-				command.amount = "1";
+                var command = {};
+                command.action = "forward";
+				command.amount = "7";
 				send(JSON.stringify(command));
 			break;
 			case 'right':
-				command.action = "right";
-				command.amount = "1";
+                var command = {};
+
+                command.action = "right";
+				command.amount = "3";
 				send(JSON.stringify(command));
 			break;
             case 'back':
                 $.getJSON(stream+"/parameters?camera=1", function() {
                 });
+
+                var command = {};
                 command.action = "back";
-                command.amount = "1";
+                command.amount = "7";
                 send(JSON.stringify(command));
+                break;
 			case 'shoot':
                 if(was_shooting === false){
                     	// start_driving();
 						shooting = true;
-						command.action = "wave";
+                    var command = {};
+                        command.action = "wave";
 						command.amount = "1";
 						send(JSON.stringify(command));
 
@@ -77,7 +91,8 @@ var main = function() {
                 if(was_avoiding === false){
                     // start_driving();
                     avoiding = true;
-					command.action = "avoid";
+                    var command = {};
+                    command.action = "avoid";
 					command.amount = "1";
 					send(JSON.stringify(command));
                     $(this).removeClass('button-action');
@@ -89,6 +104,9 @@ var main = function() {
             case 'deregister':
                 deregister();
 			    break;
+            case 'update':
+                get();
+                break;
 			default:			
 			
 		}			
@@ -127,11 +145,70 @@ function send(command) {
 		}
 	});
 
-	xhr.open("POST", "http://137.158.126.10:4000/m2m/applications/Prime_controller/containers/1/contentInstances");
+	xhr.open("POST", m2m+"m2m/applications/Prime_controller/containers/1/contentInstances");
 	// xhr.setRequestHeader("cache-control", "no-cache");
 	// xhr.setRequestHeader("postman-token", "d38eeefe-3f76-f4bc-46d5-342ada497629");
 
 	xhr.send(command);
+}
+
+function get() {
+    var xhr = new XMLHttpRequest();
+    var response_val;
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            response_val = JSON.parse(this.responseText);
+            sensor_val = JSON.parse((atob(response_val['contentInstance'].content['$t'])));
+            console.log((sensor_val));
+            var element = document.getElementById("battery");
+            element.innerHTML = "Battery: "+sensor_val.voltage;
+            var element = document.getElementById("ir");
+            element.innerHTML = "Infrared: "+sensor_val['infrared'];
+            var element = document.getElementById("colour");
+            element.innerHTML = "Colour: "+sensor_val.color;
+
+        }
+    });
+    xhr.open("GET", m2m+"m2m/applications/Prime_controller/containers/2/contentInstances/latest");
+    xhr.send();
+}
+
+function container() {
+
+    var data = {'container': {'id': '1'}}
+    var appId = 'Prime_controller';
+    var url = m2m+'m2m/applications/Prime_controller/containers';
+    // var data = {'application': {'appId': appId}};
+    data = JSON.stringify(data)
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    console.log(data);
+    // xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function(){
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+        }
+    };
+
+    xhr.send(data);var data = {'container': {'id': '2'}}
+    var appId = 'Prime_controller';
+    var url = m2m+'m2m/applications/Prime_controller/containers';
+    // var data = {'application': {'appId': appId}};
+    data = JSON.stringify(data)
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    console.log(data);
+    // xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function(){
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+        }
+    };
+
+    xhr.send(data);
+
 }
 
 
@@ -150,12 +227,12 @@ function send(command) {
 
 
 function register(){
-	var appId = 'Prime_controller';
-	var url = 'http://137.158.126.10:4000/m2m/applications';
-	var data = {'application': {'appId': appId}};
+    var appId = 'Prime_controller';
+    var url = m2m+'m2m/applications';
+    var data = {'application': {'appId': appId}};
     data = JSON.stringify(data)
-	var xhr = new XMLHttpRequest();
-	xhr.open("POST", url, true);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
     console.log(data);
     // xhr.setRequestHeader("Content-Type", "application/json");
 
@@ -163,17 +240,18 @@ function register(){
 		if (xhr.readyState === 4 && xhr.status === 200) {
 			console.log(xhr.responseText);
 		}
-	};
+    };
 
     xhr.send(data);
-    //container();
+    container();
+
 }
 
 function deregister(){
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "http://137.158.126.10:4000/m2m/applications/Prime_controller",
+        "url": m2m+"m2m/applications/Prime_controller",
         "method": "DELETE",
         "headers": {
 
@@ -185,28 +263,7 @@ function deregister(){
     });
 }
 
-// function container()
-// {
-//
-//     var appId = 'Prime';
-//     var url = 'http://137.158.126.10:4000/m2m/applications/Prime/containers';
-//     var data = {'container': {'id': 'Prime'}}
-//
-//
-//     var xhr = new XMLHttpRequest();
-//     xhr.open("POST", url, true);
-//     //xhr.setRequestHeader("Content-Type", "application/json");
-//     console.log(data);
-//     xhr.onreadystatechange = function(){
-//         if (xhr.readyState === 4 && xhr.status === 200) {
-//             console.log(xhr.responseText);
-//         }
-//     };
-//     xhr.send(data);
-//
-// }
-//
-//
+
 
 // function register(){
 //     // var settings = {
