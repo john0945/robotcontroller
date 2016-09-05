@@ -1,11 +1,11 @@
-var m2m = 'http://10.0.0.7:4000/';
+var m2m = 'http://192.168.0.107:4000/';
 // var m2m = 'http://192.168.137.43:4000/';
 var sensor_val;
 var main = function() {
 	var shooting = false;
     var avoiding = false;
 	var was_shooting = false;
-    var stream = 'http://10.0.0.5';
+    var stream = 'http://192.168.0.105';
     // var m2m = 'http://10.0.0.7:4000/'
     var command;
 
@@ -13,31 +13,34 @@ var main = function() {
 	
 	$('.button').click(function(event){
 		//set all buttons to normal colour
-		$('.button').addClass('button-action');
 		var current_id = this.offsetParent.id;
-		was_shooting = false;
-        was_avoiding = false;
+		if(current_id !== 'update') {
+		
+			$('.button').addClass('button-action');
+			was_shooting = false;
+			was_avoiding = false;
+		
+			if (avoiding){
+				//if we're driving, and any button is pressed, stop driving
+				avoiding = false;
+				was_avoiding = true;
+				var command = {};
 
-        if (avoiding){
-			//if we're driving, and any button is pressed, stop driving
-			avoiding = false;
-			was_avoiding = true;
-            var command = {};
+				command.action = "avoid";
+				command.amount = "0";
+				send(JSON.stringify(command));
+			}
+			if (shooting){
+				//if we're driving, and any button is pressed, stop driving
+				shooting = false;
+				was_shooting = true;
+				var command = {};
 
-            command.action = "avoid";
-            command.amount = "0";
-            send(JSON.stringify(command));
-        }
-        if (shooting){
-            //if we're driving, and any button is pressed, stop driving
-            shooting = false;
-            was_shooting = true;
-            var command = {};
-
-            command.action = "wave";
-            command.amount = "0";
-            send(JSON.stringify(command));
-        }
+				command.action = "wave";
+				command.amount = "0";
+				send(JSON.stringify(command));
+			}
+		}
 		var command = {}; // create an empty object
 
 		switch(current_id){
